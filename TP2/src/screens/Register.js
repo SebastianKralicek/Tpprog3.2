@@ -1,5 +1,5 @@
 import { React, Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Pressable } from "react-native";
+import { View, Text, TextInput,  StyleSheet, Pressable } from "react-native";
 
 export default class Register extends Component {
   constructor(props) {
@@ -39,11 +39,11 @@ render(){
             <Pressable onPress={ () => this.onSubmit} style={styles.blueButton}>
                 <Text style={styles.buttonText}>Registrarse</Text>
             </Pressable>
-        <TouchableOpacity
+        <Pressable
          style={styles.button}
          onPress={() => this.props.navigation.navigate("Login")} >
             <Text>Ya tengo cuenta</Text>
-         </TouchableOpacity>
+         </Pressable>
 
         </View>
     );
