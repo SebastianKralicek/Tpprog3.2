@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import { auth } from '../firebase/config';
 
 export default class Login extends Component {
@@ -14,11 +14,11 @@ export default class Login extends Component {
   }
 
   
-  login(email, pass){
-    auth
-      .signInWithEmailAndPassword(email, pass)
+  login(){
+    auth.signInWithEmailAndPassword(this.state.email, this.state.pass)
       .then((response) => {
         this.setState({ loggedIn: true });
+        this.props.navigation.push("HomeMenu")
       })
       .catch((error) => {
         this.setState({ error: 'Credenciales inválidas.' });
@@ -46,19 +46,19 @@ export default class Login extends Component {
           onChangeText={(text) => this.setState({ pass: text })}
         />
 
-        <TouchableOpacity
+        <Pressable
           style={styles.btn}
-          onPress={() => this.login(this.state.email, this.state.pass)}
+          onPress={() => this.login()}
         >
           <Text style={styles.btnText}>Ingresar</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           style={styles.registerBtn}
           onPress={() => this.props.navigation.navigate('Register')}
         >
           <Text style={styles.registerText}>¿No tenés cuenta? Registrate</Text>
-        </TouchableOpacity>
+        </Pressable>
 
         {this.state.error ? (
           <Text style={styles.error}>{this.state.error}</Text>
