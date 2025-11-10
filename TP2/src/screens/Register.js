@@ -15,6 +15,7 @@ export default class Register extends Component {
     }
 }
 
+
 register(email, contrasena, usuario) {
   auth.createUserWithEmailAndPassword(email, contrasena)
     .then((response) => {

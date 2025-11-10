@@ -13,6 +13,14 @@ export default class Login extends Component {
     };
   }
 
+  componentDidMount() {
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        this.props.navigation.replace("HomeMenu");
+      }
+    });
+  }
+
   
   login(){
     auth.signInWithEmailAndPassword(this.state.email, this.state.pass)
