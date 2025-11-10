@@ -15,23 +15,6 @@ export default class DynamicForm extends Component {
         }
     }
 
-    register(email, constrasena, usuario){
-        auth.createUserWithEmailAndPassword(email, constrasena)
-        .then((response) => {
-            db.collection('usuarios').add({
-                email: response.user.email,
-                usuario: usuario,
-                createdAt: Date.now()
-            });
-            this.setState({ registered: true, error: ""});
-            console.log("Usuario registrado:", response.user.email);
-        })
-        .catch((error) => {
-            this.setState({erorr: "registro fallido, intente de nuevo"})
-            console.error("Erorr:", error);
-        });
-}
-
 onSubmit = () => {
     this.register(this.state.email, this.state.contrasena, this.state.usuario);
 };

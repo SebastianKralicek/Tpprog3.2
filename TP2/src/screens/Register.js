@@ -1,6 +1,6 @@
 import { React, Component } from 'react';
 import { View, Text, TextInput,  StyleSheet, Pressable } from "react-native";
-import { auth } from "../firebase/config"
+import { auth, db } from "../firebase/config";
 
 export default class Register extends Component {
   constructor(props) {
@@ -15,13 +15,32 @@ export default class Register extends Component {
     }
 }
 
+register(email, contrasena, usuario) {
+  auth.createUserWithEmailAndPassword(email, contrasena)
+    .then((response) => {
+      db.collection('usuarios').add({
+        email: response.user.email,
+        usuario: usuario,
+        createdAt: Date.now()
+      })
+      .then(() => {
+        this.setState({ registered: true, error: "" });
+        this.props.navigation.push("Login");
+      })
+      .catch((error) => {
+        this.setState({ error: "Error al guardar en Firestore" });
+      });
+    })
+    .catch((error) => {
+      this.setState({ error: error.message });
+      console.error("Error de registro:", error.message);
+    });
+}
 
-  onSubmit() {
-      auth.createUserWithEmailAndPassword(this.state.email,this.state.contrasena)
-        .then(response => {this.setState({registered:true})
-              this.props.navigation.push("Login");})
-        .catch(error => this.setState({error:"Fallo en el registro"}))
-  }
+ onSubmit() {
+  const { email, contrasena, usuario } = this.state;
+  this.register(email, contrasena, usuario);
+}
 
 
 render(){
