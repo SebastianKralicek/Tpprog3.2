@@ -85,13 +85,13 @@ export default class Home extends Component {
 
     
     if (this.props.navigation && this.props.navigation.navigate) {
-      this.props.navigation.navigate('ComentPost', { postId });
+      this.props.navigation.navigate('CommentPost', { postId });
     }
 
     if (this.props.navigation && typeof this.props.navigation.getPadre === 'function') {
       const padre = this.props.navigation.getPadre();
       if (padre && padre.navigate) {
-        parent.navigate('ComentPost', { postId });
+        parent.navigate('CommentPost', { postId });
       }
     }
   };

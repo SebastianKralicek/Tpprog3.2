@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from './src/screens/Login'
 import Register from "./src/screens/Register";
 import HomeMenu from "./src/componentes/HomeMenu"
-import ComentPost from './src/screens/ComentPost';
+import ComentPost from './src/screens/CommentPost';
 
 const Stack = createNativeStackNavigator();
 
