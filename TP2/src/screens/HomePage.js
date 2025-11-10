@@ -100,9 +100,10 @@ export default class Home extends Component {
     const email = auth.currentUser ? auth.currentUser.email : null;
     const likesArr = Array.isArray(item.data.likes) ? item.data.likes : [];
     const iLike = email ? likesArr.includes(email) : false;
+    const content = item.data.descripcion || item.data.texto || '';
 
     let ownerLabel = 'Usuario';
-    const owner = item.data.owner;
+    const owner = item.data.owner;  
     if (typeof owner === 'string') {
       ownerLabel = owner;
     } else if (owner && typeof owner === 'object') {
@@ -112,37 +113,59 @@ export default class Home extends Component {
     }
 
 
-    let createdAtText = '';
-    try {
-      if (item.data.createdAt && typeof item.data.createdAt.toDate === 'function') {
-        createdAtText = item.data.createdAt.toDate().toLocaleString();
-      }
-    } catch (e) {}
+    const fecha = (createdAt) => {
+    if (!createdAt) return '';
+    let dateObj;
+    if (createdAt.toDate && typeof createdAt.toDate === 'function') {
+      dateObj = createdAt.toDate();
+    } else if (typeof createdAt === 'number') {
+      dateObj = new Date(createdAt);
+    } else {
+      return '';
+    }
+
+    const now = new Date();
+    const sameDay = dateObj.toDateString() === now.toDateString();
+    const timeStr = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    if (sameDay) {
+      return `posteó hoy a las ${timeStr}`;
+    } else {
+      const datePart = dateObj.toLocaleDateString();
+      return `posteó el ${datePart} a las ${timeStr}`;
+    }
+  };
+
+  const whenText = fecha(item.data.createdAt);
 
     return (
       <View style={styles.post}>
-        <Text style={styles.user}>Usuario: {ownerLabel}</Text>
-        {item.data.texto ? <Text style={styles.text}>{item.data.texto}</Text> : null}
-        {!!createdAtText && <Text style={styles.date}>{createdAtText}</Text>}
+      <Text style={styles.postHeader}>
+        {ownerLabel} {whenText ? whenText : ''}
+      </Text>
+      {content ? <Text style={styles.postText}>{content}</Text> : null}
+      <View style={styles.metaRow}>
+        <Text style={styles.likesCount}>❤ {likesArr.length}</Text>
 
-        <Text>Likes: {likesArr.length}</Text>
+        <View style={styles.actionsRight}>
+          {iLike ? (
+            <Pressable onPress={() => this.unlikePost(item.id)}>
+              <Text style={styles.unlike}>DESLIKE</Text>
+            </Pressable>
+          ) : (
+            <Pressable onPress={() => this.likePost(item.id)}>
+              <Text style={styles.like}>LIKE</Text>
+            </Pressable>
+          )}
 
-        {iLike ? (
-          <Pressable onPress={() => this.unlikePost(item.id)}>
-            <Text style={styles.unlike}>unlike</Text>
+          <Pressable onPress={() => this.goToComments(item.id)}>
+            <Text style={styles.comment}>Comentar</Text>
           </Pressable>
-        ) : (
-          <Pressable onPress={() => this.likePost(item.id)}>
-            <Text style={styles.like}>like</Text>
-          </Pressable>
-        )}
-
-        <Pressable onPress={() => this.goToComments(item.id)}>
-          <Text style={styles.comment}>Comentar</Text>
-        </Pressable>
+        </View>
       </View>
-    );
-  };
+    </View>
+  );
+};
 
   keyExtractor = (item) => item.id;
 
@@ -171,16 +194,62 @@ const styles = StyleSheet.create({
   center: { alignItems: 'center', justifyContent: 'center', padding: 12 },
   title: { fontSize: 22, fontWeight: '700', margin: 12 },
   post: {
-    backgroundColor: '#f7f7f7',
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 12,
-    marginBottom: 12
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 14,
+    marginHorizontal: 14,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#ececec',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
   },
-  user: { fontSize: 16, fontWeight: '600', marginBottom: 6 },
-  text: { fontSize: 14, marginBottom: 8 },
-  date: { fontSize: 11, opacity: 0.6, marginBottom: 8 },
-  like: { color: '#d32f2f', fontWeight: '700', marginTop: 6 },
-  unlike: { color: '#757575', fontWeight: '700', marginTop: 6 },
-  comment: { color: '#1565c0', fontWeight: '700', marginTop: 8 }
+  postHeader: {
+    fontSize: 12,
+    color: '#444',
+    fontStyle: 'italic',
+    marginBottom: 8,
+  },
+  postText: {
+    fontSize: 20,
+    lineHeight: 28,
+    color: '#111',
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  likesCount: {
+    fontSize: 13,
+    color: '#d32f2f',
+    fontWeight: '700',
+  },
+  actionsRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  like: {
+    color: '#d32f2f',
+    fontWeight: '700',
+    marginLeft: 12,
+    fontSize: 12,
+  },
+  unlike: {
+    color: '#757575',
+    fontWeight: '700',
+    marginLeft: 12,
+    fontSize: 12,
+  },
+  comment: {
+    color: '#1565c0',
+    fontWeight: '700',
+    marginLeft: 12,
+    fontSize: 12,
+  },
 });
